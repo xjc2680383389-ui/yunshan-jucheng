@@ -1,67 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>云山巨城 · 体素山水</title>
-<link rel="stylesheet" href="assets/css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#173137">
+  <title>云山巨城 · 一城山水，十二时辰</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="gl"></canvas>
-
-<!-- 左上：作品名牌 -->
-<div id="brand" class="panel">
-  <div class="title">云山巨城 · 体素山水</div>
-  <div class="sub">程序化生成 · 固定种子 · 0.2m 体素</div>
-</div>
-
-<!-- 右上：模式与工具 -->
-<div id="modes" class="panel">
-  <button id="btnOrbit" class="btn on">环绕</button>
-  <button id="btnWalk" class="btn">漫游</button>
-  <button id="btnTour" class="btn">巡游</button>
-  <span class="sep"></span>
-  <button id="btnPerf" class="btn">性能模式</button>
-  <button id="btnHelp" class="btn">操作说明</button>
-</div>
-
-<!-- 底部中央：昼夜控制台 -->
-<div id="console" class="panel">
-  <button id="btnPlay" class="btn" title="播放/暂停">⏸</button>
-  <span id="timeLabel">07:30</span>
-  <div class="speeds">
-    <button id="sp60" class="btn sm">60×</button>
-    <button id="sp360" class="btn sm on">360×</button>
-    <button id="sp1440" class="btn sm">1440×</button>
-  </div>
-  <input id="timeSlider" type="range" min="0" max="24" step="0.05" value="7.5">
-</div>
-
-<!-- 左下：帧率 -->
-<div id="fps">-- FPS</div>
-
-<!-- 操作说明 -->
-<div id="help" class="modal">
-  <div class="card">
-    <div class="card-title">操作说明<button id="btnHelpClose" class="btn sm">关闭</button></div>
-    <p><b>环绕</b>（默认）：左键拖动旋转视角，滚轮缩放，右键拖动平移；触屏单指旋转、双指缩放。</p>
-    <p><b>漫游</b>：点击画布锁定指针，WASD 移动、鼠标转视、Shift 加速、Esc 退出。</p>
-    <p><b>巡游</b>：一键自动沿全城路线游览，空格或 Esc 退出接管。</p>
-    <p><b>昼夜</b>：底部控制台可暂停/播放、拖动时间滑条任意设定时刻、切换流逝速度（60×/360×/1440×）。推荐 06:30 日出、19:00 日落、21:00 灯火。</p>
-    <p><b>性能模式</b>：低配电脑选开（关闭阴影、拉近雾距）。</p>
-  </div>
-</div>
-
-<!-- 载入遮罩 -->
-<div id="loading">
-  <div class="title">云山巨城</div>
-  <div id="loadingPct">正在生成世界 … 0%</div>
-  <div class="bar"><div id="loadingBar"></div></div>
-</div>
-
-<div id="err"></div>
-<div id="autotest" style="display:none"></div>
-
-<script type="module" src="src/main.js"></script>
+  <canvas id="world" aria-label="可交互游览的三维体素山城"></canvas>
+  <div class="vignette"></div>
+  <header>
+    <div class="brand"><svg viewBox="0 0 42 42" aria-hidden="true"><path d="M3 29 13 12 22 26 29 16 39 29M8 33H35M20 10V5M15 7H25"/></svg><span>山 河 造 境<small>AN ORIGINAL VOXEL WORLD</small></span></div>
+    <div class="top-actions"><span class="live"><i></i> 实时山水</span><button id="help" title="操作说明" aria-label="操作说明">?</button><button id="fullscreen" title="全屏游览" aria-label="全屏游览">⛶</button></div>
+  </header>
+  <aside class="intro">
+    <div class="eyebrow">山水之间 · 第壹卷</div>
+    <h1>云山<span>巨城</span></h1>
+    <div class="rule"></div>
+    <p>城随山势起，水绕万家流。<br>在云与山之间，走过十二时辰。</p>
+    <div class="stamp">云<br>山</div>
+  </aside>
+  <nav class="views" aria-label="观景点">
+    <button data-view="overview" class="active"><span>01</span> 山城全景 <i>↗</i></button>
+    <button data-view="falls"><span>02</span> 瀑畔观澜 <i>↗</i></button>
+    <button data-view="summit"><span>03</span> 云顶揽胜 <i>↗</i></button>
+    <button data-view="city"><span>04</span> 万家灯火 <i>↗</i></button>
+  </nav>
+  <div class="location"><span id="view-title">山城全景</span><small id="view-subtitle">重岭入画 · 古城依山</small></div>
+  <div class="mode-panel"><button id="tour">▷ 沿路漫游</button><button id="fly">自由飞行</button><button id="quality" title="切换渲染分辨率">画质 · 高</button></div>
+  <footer class="timeline">
+    <div class="time-display"><span id="time">16:20</span><small id="period">申时 · 日影渐长</small></div>
+    <button id="play" class="play" title="暂停昼夜循环" aria-label="暂停昼夜循环">Ⅱ</button>
+    <div class="time-track"><div class="time-ticks"><span>子 · 00</span><span>卯 · 06</span><span>午 · 12</span><span>酉 · 18</span><span>24</span></div><input id="hours" type="range" min="0" max="24" step="0.01" value="16.333" aria-label="一天中的时间"><div class="time-presets"><button data-time="5.8">拂晓</button><button data-time="12">正午</button><button data-time="17.8">日暮</button><button data-time="22">星夜</button></div></div>
+    <label class="speed">时间流速<select id="speed" aria-label="昼夜循环速度"><option value="240">4 分钟 / 日</option><option value="120" selected>2 分钟 / 日</option><option value="60">1 分钟 / 日</option><option value="600">10 分钟 / 日</option><option value="86400">真实时间</option></select></label>
+  </footer>
+  <div class="hint" id="hint">拖动旋转 · 滚轮缩放 · 右键平移</div>
+  <div class="scene-meta"><span>0.2 m / voxel</span><span id="stats">原创程序化山城</span></div>
+  <div id="loading"><div class="loader-mark">山</div><h2>山河正在成形</h2><p id="load-status">构筑重峦与溪谷…</p><div class="load-line"><i></i></div></div>
+  <dialog id="instructions"><button id="close-help" aria-label="关闭操作说明">×</button><div class="eyebrow">游览手记</div><h2>一城山水，任你游览</h2><p><b>自由观察</b>　左键拖动旋转，滚轮缩放，右键拖动平移；触屏单指旋转、双指缩放。</p><p><b>自由飞行</b>　开启后拖动转向，W / S 前后、A / D 左右、Q / E 升降；Shift 加速。</p><p><b>沿路漫游</b>　沿城门、溪桥、瀑畔、山道前往揽云亭，可随时暂停或退出。拖动可环顾。</p><p><b>十二时辰</b>　底部滑条任意调时，Ⅱ / ▶ 暂停或推进昼夜。漫游与昼夜可分别暂停。</p><p><b>快捷键</b>　空格暂停昼夜，1–4 切换观景点，H 显隐界面，Esc 返回自由观察。</p><small>全部场景构件遵循 0.2 米整数格；相邻体素合并绘制。零第三方依赖，WebGL2 实时渲染。</small></dialog>
+  <div id="error" role="alert" hidden></div>
+  <script src="world.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

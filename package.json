@@ -1,1 +1,1 @@
-{"name":"yunshan-jucheng","type":"module","private":true}
+{"name":"yunshan-jucheng","version":"1.0.0","private":true,"description":"原创原生 WebGL2 三维体素山城，零第三方依赖","scripts":{"start":"node server.js","test":"node verify.js"}}
